@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Form basic</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<div class="container mx-auto p-4">
+    <div class="w-full max-w-md mx-auto bg-white p-10 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">ฟอร์มรับชื่อของนักเรียน และคะแนนสอบ</h1>
+        <label for="name" class="block text-sm font-medium text-gray-700">ชื่อ</label>
+        <input type="text" id="name"
+               class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+               placeholder="กรุณากรอกชื่อของคุณ">
+        <label for="score" class="block text-sm font-medium text-gray-700 mt-4">คะแนนสอบ</label>
+        <input type="number" id="score"
+               class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+               placeholder="กรุณากรอกคะแนนสอบของคุณ (0-100)" min="0" max="100">
+        <button id="submit"
+                class="mt-4 w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Submit
+        </button>
+        <p id="message" class="mt-4 text-sm text-gray-600"></p>
+    </div>
+</div>
+<script>
+
+    document.getElementById('submit').addEventListener('click', function () {
+        const name = document.getElementById('name').value;
+        const score = document.getElementById('score').value;
+        const message = document.getElementById('message');
+
+        if (name === '' || score === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อมูลไม่ครบถ้วน',
+                text: 'กรุณากรอกชื่อและคะแนนให้ครบถ้วน'
+            });
+            message.textContent = 'กรุณากรอกชื่อและคะแนนให้ครบถ้วน';
+            message.classList.add('text-red-500');
+        } else {
+            if (isNaN(score) || score < 0 || score > 100) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'คะแนนไม่ถูกต้อง',
+                    text: 'กรุณากรอกคะแนนที่ถูกต้องระหว่าง 0 ถึง 100'
+                });
+                message.textContent = 'กรุณากรอกคะแนนที่ถูกต้องระหว่าง 0 ถึง 100';
+                message.classList.add('text-red-500');
+            } else {
+                if (score >= 50) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ผ่านแล้ว',
+                        text: `ยินดีด้วยคุณ ${name} ได้คะแนน ${score}!`
+                    });
+                    message.textContent = `ยินดีด้วยคุณ ${name} ได้คะแนน ${score}! : ผ่าน.`;
+                    message.classList.remove('text-red-500');
+                    message.classList.add('text-green-500');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ไม่ผ่าน',
+                        text: `ขอโทษนะ ${name} คุณไม่ผ่านด้วยคะแนน ${score}.`
+                    });
+                    message.textContent = `คุณ ${name} ไม่ผ่านด้วยคะแนน ${score} : ไม่ผ่าน.`;
+                    message.classList.remove('text-green-500');
+                    message.classList.add('text-red-500');
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
