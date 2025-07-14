@@ -56,12 +56,26 @@ function validateContentType(req) {
 }
 
 /**
+ * Validates the authorization header.
+ * @param req
+ * @returns {boolean}
+ */
+function validateAuth(req) {
+    const auth = req.headers.authorization;
+    return auth && auth.startsWith('Bearer ');
+}
+
+/**
  * Generates the next ID for a new book.
  * @param books
  * @returns {number|number}
  */
 function generateNextId(books){
     return books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
+}
+
+function findBookById(books, id) {
+    return books.findIndex(book => book.id === id);
 }
 
 let books = [
@@ -110,6 +124,11 @@ const server = http.createServer((req, res) => {
         }
 
         if (path === '/books' && method === 'POST') {
+            if (!validateAuth(req)) {
+                sendResponse(res, 401, { error: 'Unauthorized' });
+                return;
+            }
+
             if (!validateContentType(req)) {
                 sendResponse(res, 415, { error: 'Unsupported Media Type' });
                 return;
@@ -150,13 +169,19 @@ const server = http.createServer((req, res) => {
         }
 
         if (path.startsWith('/books/') && method === 'PUT') {
+            if (!validateAuth(req)) {
+                sendResponse(res, 401, { error: 'Unauthorized' });
+                return;
+            }
+
             if (!validateContentType(req)) {
                 sendResponse(res, 415, { error: 'Unsupported Media Type' });
                 return;
             }
 
+
             const id = path.split('/')[2];
-            const bookIndex = books.findIndex(b => b.id === id);
+            const bookIndex = findBookById(books, id);
 
             if (bookIndex === -1) {
                 sendResponse(res, 404, { error: 'Book not found' });
@@ -190,13 +215,18 @@ const server = http.createServer((req, res) => {
         }
 
         if (path.startsWith('/books/') && method === 'DELETE') {
+            if (!validateAuth(req)) {
+                sendResponse(res, 401, { error: 'Unauthorized' });
+                return;
+            }
+
             if (!validateContentType(req)) {
                 sendResponse(res, 415, { error: 'Unsupported Media Type' });
                 return;
             }
 
             const id = path.split('/')[2];
-            const bookIndex = books.findIndex(b => b.id === id);
+            const bookIndex = findBookById(books, id);
 
             if (bookIndex === -1) {
                 sendResponse(res, 404, { error: 'Book not found' });
