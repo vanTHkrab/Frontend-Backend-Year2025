@@ -1,14 +1,14 @@
-import { Request, Response } from 'express';
-import { pool } from '../config/database';
-import { CreateActivityRequest, ActivityRecord, UserSummary } from '../types';
-import { validationResult } from 'express-validator';
+import {Request, Response} from 'express';
+import {pool} from '../config/database';
+import {CreateActivityRequest, ActivityRecord, UserSummary} from '../types';
+import {validationResult} from 'express-validator';
 import mysql from "mysql2/promise";
 
 export const createActivity = async (req: Request, res: Response) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({errors: errors.array()});
         }
 
         const {
@@ -24,9 +24,9 @@ export const createActivity = async (req: Request, res: Response) => {
         const completedAtDate = completed_at ? new Date(completed_at) : new Date();
 
         const [result] = await pool.execute(
-            `INSERT INTO daily_activities 
-       (user_name, user_email, user_id, goal_title, activity_name, activity_description, completed_at) 
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO daily_activities
+             (user_name, user_email, user_id, goal_title, activity_name, activity_description, completed_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [user_name, user_email, user_id, goal_title, activity_name, activity_description || null, completedAtDate]
         );
 
@@ -57,7 +57,7 @@ export const createActivity = async (req: Request, res: Response) => {
 
 export const getActivities = async (req: Request, res: Response) => {
     try {
-        const { user_id, user_email, date} = req.query;
+        const {user_id, user_email, date} = req.query;
 
         let query = 'SELECT * FROM daily_activities';
         const queryParams: any[] = [];
@@ -99,7 +99,7 @@ export const getActivities = async (req: Request, res: Response) => {
 
 export const getActivityById = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
 
         const [rows] = await pool.execute(
             'SELECT * FROM daily_activities WHERE id = ?',
@@ -130,15 +130,14 @@ export const getActivityById = async (req: Request, res: Response) => {
 export const getUsersList = async (req: Request, res: Response) => {
     try {
         const [rows] = await pool.execute(
-            `SELECT 
-        user_id,
-        user_name,
-        user_email,
-        COUNT(*) as total_activities,
-        MAX(completed_at) as last_activity
-      FROM daily_activities 
-      GROUP BY user_id, user_name, user_email
-      ORDER BY last_activity DESC`
+            `SELECT user_id,
+                    user_name,
+                    user_email,
+                    COUNT(*)          as total_activities,
+                    MAX(completed_at) as last_activity
+             FROM daily_activities
+             GROUP BY user_id, user_name, user_email
+             ORDER BY last_activity DESC`
         );
 
         res.json({
@@ -155,20 +154,17 @@ export const getUsersList = async (req: Request, res: Response) => {
 
 export const getUserSummary = async (req: Request, res: Response) => {
     try {
-        const { user_id } = req.params;
+        const {user_id} = req.params;
 
         const [rows] = await pool.execute(
-            `SELECT 
-        user_id,
-        user_name,
-        user_email,
-        COUNT(*) as total_activities,
-        COUNT(DISTINCT DATE(completed_at)) as active_days,
-        DATE(MIN(completed_at)) as first_activity,
-        DATE(MAX(completed_at)) as last_activity
-      FROM daily_activities 
-      WHERE user_id = ?
-      GROUP BY user_id, user_name, user_email`,
+            `SELECT user_id,
+                    user_name,
+                    user_email,
+                    COUNT(*)                            as total_activities,
+                    COUNT(DISTINCT DATE (completed_at)) as active_days, DATE (MIN (completed_at)) as first_activity, DATE (MAX (completed_at)) as last_activity
+             FROM daily_activities
+             WHERE user_id = ?
+             GROUP BY user_id, user_name, user_email`,
             [user_id]
         );
 
@@ -195,17 +191,16 @@ export const getUserSummary = async (req: Request, res: Response) => {
 
 export const getDailyGoalProgress = async (req: Request, res: Response) => {
     try {
-        const { user_id, date } = req.params;
+        const {user_id, date} = req.params;
 
         const [rows] = await pool.execute(
-            `SELECT 
-        goal_title,
-        COUNT(*) as activities_count,
-        GROUP_CONCAT(activity_name SEPARATOR ', ') as activities_done
-      FROM daily_activities 
-      WHERE user_id = ? AND DATE(completed_at) = ?
-      GROUP BY goal_title
-      ORDER BY activities_count DESC`,
+            `SELECT goal_title,
+                    COUNT(*)                                   as activities_count,
+                    GROUP_CONCAT(activity_name SEPARATOR ', ') as activities_done
+             FROM daily_activities
+             WHERE user_id = ? AND DATE (completed_at) = ?
+             GROUP BY goal_title
+             ORDER BY activities_count DESC`,
             [user_id, date]
         );
 
@@ -223,33 +218,27 @@ export const getDailyGoalProgress = async (req: Request, res: Response) => {
 
 export const getActivityStats = async (req: Request, res: Response) => {
     try {
-        const { user_id } = req.params;
+        const {user_id} = req.params;
 
-        // สถิติกิจกรรมต่างๆ
         const [activityStats] = await pool.execute(
-            `SELECT 
-        activity_name,
-        COUNT(*) as frequency,
-        DATE(MAX(completed_at)) as last_done
-      FROM daily_activities 
-      WHERE user_id = ?
-      GROUP BY activity_name
-      ORDER BY frequency DESC
-      LIMIT 10`,
+            `SELECT activity_name,
+                    COUNT(*) as frequency, DATE (MAX (completed_at)) as last_done
+             FROM daily_activities
+             WHERE user_id = ?
+             GROUP BY activity_name
+             ORDER BY frequency DESC
+                 LIMIT 10`,
             [user_id]
         );
 
-        // สถิติเป้าหมาย
         const [goalStats] = await pool.execute(
-            `SELECT 
-        goal_title,
-        COUNT(*) as total_activities,
-        COUNT(DISTINCT DATE(completed_at)) as days_worked
-      FROM daily_activities 
-      WHERE user_id = ?
-      GROUP BY goal_title
-      ORDER BY total_activities DESC
-      LIMIT 10`,
+            `SELECT goal_title,
+                    COUNT(*)                            as total_activities,
+                    COUNT(DISTINCT DATE (completed_at)) as days_worked
+             FROM daily_activities
+             WHERE user_id = ?
+             GROUP BY goal_title
+             ORDER BY total_activities DESC LIMIT 10`,
             [user_id]
         );
 
