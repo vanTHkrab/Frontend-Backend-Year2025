@@ -22,7 +22,15 @@ const poolOptions: PoolOptions = {
     dateStrings: false
 };
 
-// Create a MySQL connection pool using the provided configuration
-const pool: Pool = mysql.createPool(poolOptions);
+export const pool: Pool = mysql.createPool(poolOptions);
 
-export default pool;
+export const testConnection = async (): Promise<void> => {
+    try {
+        const connection = await pool.getConnection();
+        console.log('✅ Database connected successfully');
+        connection.release();
+    } catch (error) {
+        console.error('❌ Database connection failed:', error);
+        process.exit(1);
+    }
+};
