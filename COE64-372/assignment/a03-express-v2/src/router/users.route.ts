@@ -7,7 +7,7 @@ import {
     getUserSummary,
     getDailyGoalProgress,
     getActivityStats
-} from '../controllers/activityController';
+} from '../controllers/activity.controller';
 import { validateCreateActivity } from '../middleware/validation';
 
 const router = Router();
