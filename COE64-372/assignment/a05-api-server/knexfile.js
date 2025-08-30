@@ -3,13 +3,12 @@
 const { mysql: mysqlCfg } = require('./src/config');
 
 module.exports = {
-    client: mysqlCfg.connect,
+    client: 'mysql2',
     connection: {
         host: mysqlCfg.host,
         user: mysqlCfg.user,
         password: mysqlCfg.password,
         database: mysqlCfg.database,
-        port: mysqlCfg.port,
         charset: 'utf8mb4',
     },
     migrations: {

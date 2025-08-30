@@ -3,7 +3,6 @@ const config = {
     port: process.env.PORT || 3000,
     env: process.env.NODE_ENV || 'production',
     mysql: {
-        connect: process.env.MYSQL_CONNECTION || 'mysql',
         host: process.env.MYSQL_HOST || '127.0.0.1',
         port: Number(process.env.MYSQL_PORT || 3306),
         user: process.env.MYSQL_USER || 'root',
