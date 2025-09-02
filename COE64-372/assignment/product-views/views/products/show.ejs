@@ -1,0 +1,26 @@
+<%- include('../partials/head') %>
+
+<% if (!item) { %>
+  <section>
+    <h1 class="text-xl font-semibold text-red-600">ไม่พบสินค้า</h1>
+    <a href="/products" class="text-blue-700 hover:underline">กลับไปหน้ารายการ</a>
+  </section>
+<% } else { %>
+  <section class="space-y-3">
+    <h1 class="text-2xl font-bold"><%= item.name %></h1>
+    <img
+      src="<%= (item.imageUrl && item.imageUrl.trim()) ? item.imageUrl : `https://placehold.co/800x500?text=${encodeURIComponent(item.name || 'No Image')}` %>"
+      alt="<%= item.name %>"
+      loading="lazy"
+      onerror="this.src='https://placehold.co/800x500?text=Image+unavailable'"
+      class="w-full max-w-2xl aspect-[16/10] object-cover rounded bg-gray-100"
+    />
+    <div>ราคา: ฿<%= formatTHB(item.price) %></div>
+    <div>หมวดหมู่: <%= item.category || '-' %></div>
+    <p class="text-gray-700"><%= item.description %></p>
+
+    <a href="/products" class="text-blue-700 hover:underline">← กลับไปหน้ารายการ</a>
+  </section>
+<% } %>
+
+<%- include('../partials/foot') %>

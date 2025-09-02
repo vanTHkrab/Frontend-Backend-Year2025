@@ -1,0 +1,41 @@
+<%- include('../partials/head') %>
+
+<section class="space-y-4">
+  <h1 class="text-2xl font-bold">รายการสินค้า</h1>
+
+  <form class="flex gap-2" method="get" action="/products">
+    <input
+      class="border rounded px-3 py-2 flex-1"
+      type="text"
+      name="q"
+      placeholder="ค้นหาชื่อสินค้า"
+      value="<%= q %>"
+    />
+    <button class="px-4 py-2 bg-black text-white rounded">ค้นหา</button>
+  </form>
+
+  <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <% if (items.length === 0) { %>
+      <li class="text-gray-600">ไม่พบสินค้า</li>
+    <% } %>
+
+    <% items.forEach(it => { %>
+      <li class="border rounded p-4 bg-white">
+        <img
+          src="<%= (it.imageUrl && it.imageUrl.trim()) ? it.imageUrl : `https://placehold.co/600x400?text=${encodeURIComponent(it.name || 'No Image')}` %>"
+          alt="<%= it.name %>"
+          loading="lazy"
+          onerror="this.src='https://placehold.co/600x400?text=Image+unavailable'"
+          class="w-full aspect-[4/3] object-cover rounded mb-3 bg-gray-100"
+        />
+        <h3 class="font-semibold"><%= it.name %></h3>
+        <p class="text-sm text-gray-600">฿<%= formatTHB(it.price) %></p>
+        <a class="text-blue-600 inline-block mt-2 hover:underline" href="/products/<%= it.id %>">
+          ดูรายละเอียด
+        </a>
+      </li>
+    <% }) %>
+  </ul>
+</section>
+
+<%- include('../partials/foot') %>
