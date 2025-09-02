@@ -2,41 +2,28 @@ const express = require('express');
 const cors = require('cors');
 const knex = require('knex');
 const knexConfig = require('../knexfile.js');
-const createProductRouter = require('./router/product.route');
+const createProductRouter = require('./products/product.route');
+const helmet = require('helmet');
+require('dotenv').config();
 
-const PORT = process.env.PORT || 4000;
-
+const PORT = process.env.PORT || 3000;
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+app.use(helmet());
+app.use(cors(
+    {
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type']
+    }
+));
+app.use(express.json({ limit: '10mb' }));
 
 const db = knex(knexConfig);
 
 app.use('/api/products', createProductRouter(db));
 
-app.get('/api/categories', async (req, res) => {
-    try {
-        const categories = await db('products')
-            .distinct('category')
-            .whereNot('category', '')
-            .orderBy('category');
-
-        res.json(categories.map(item => item.category));
-    } catch (error) {
-        console.error('Error fetching categories:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Health check endpoint
-app.get('/api/health', async (req, res) => {
-    try {
-        await db.raw('SELECT 1');
-        res.json({ status: 'OK', database: 'connected' });
-    } catch (error) {
-        res.status(503).json({ status: 'ERROR', database: 'disconnected' });
-    }
-});
+app.get('/health', (_req, res) => res.json({ ok: true }));
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
@@ -59,6 +46,6 @@ app.listen(PORT, () => {
     console.log('  POST   /api/products');
     console.log('  PUT    /api/products/:id');
     console.log('  DELETE /api/products/:id');
-    console.log('  GET    /api/categories');
+    console.log('  GET    /api/products/categories/list');
     console.log('  GET    /api/health');
 });
