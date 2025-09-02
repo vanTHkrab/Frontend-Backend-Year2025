@@ -6,7 +6,7 @@ import {Button} from "@/components/ui/button";
 import {StaggerContainer, FadeInUp, TechSpinner} from "@/components/motion/MotionWrappers";
 import GlitchText from "@/components/motion/GlitchText.tsx";
 import ProductCard from "@/components/ProductCard.tsx";
-const API = import.meta.env.VITE_API_URL || "http://103.114.203.225:4000/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const techCategories = [
     {name: "All Products", icon: Zap, color: "from-blue-500 to-purple-600"},

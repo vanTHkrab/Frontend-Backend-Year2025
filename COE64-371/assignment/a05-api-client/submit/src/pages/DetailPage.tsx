@@ -6,7 +6,7 @@ import type { Product } from '@/types';
 import { Button } from '@/components/ui/button';
 import { FadeInUp } from '@/components/motion/MotionWrappers';
 
-const API = import.meta.env.VITE_API_URL || "http://103.114.203.225:4000/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export default function DetailPage() {
     const { id } = useParams<{ id: string }>();

@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
-const API = import.meta.env.VITE_API_URL ?? "http://103.114.203.225:4000/api";
+const API = import.meta.env.VITE_API_URL as string;
 
 const productSchema = z.object({
     id: z.string().min(1, 'Product ID is required').min(3, 'Product ID must be at least 3 characters'),

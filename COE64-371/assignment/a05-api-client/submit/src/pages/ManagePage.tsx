@@ -15,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Progress } from "@/components/ui/progress";
 import { StaggerContainer, StaggerItem, ScaleIn, FadeInUp } from "@/components/motion/MotionWrappers";
 
-const API = import.meta.env.VITE_API_URL || "http://103.114.203.225:4000/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 interface EditProduct extends Product {
     isEditing?: boolean;
